@@ -156,7 +156,6 @@ xr_effects.on_init_delivery_task = function(actor,npc,p)
 	}
 	save_var(db.actor, var, tbl)
 	printdbg("- %s | on_init_delivery_task | giver_comm: %s - target_id: %s - item_1_sec: %s - lvl_task: %s - lvl_target: %s", var, task_giver_comm, target_id, item_1_sec, level_task, level_target)
-
 	-- Show info
 	local function postpone_for_next_frame(target_id)
 		local news_caption = game.translate_string(task_manager.task_ini:r_string_ex(p[1], "title")) or "error"

@@ -73,12 +73,38 @@ function reset_taskboard(pda_tab)
 	-- Basically let XRay do its stuff with setting up logic
 	for _, task_effect in ipairs(sorted_keys) do
 		local task_data = prepared_tasks_data[task_effect][1]
-		prepare_task( task_data )
+		if task_data then prepare_task( task_data ) end
 	end
 
 	-- Delay required for task details from actor message to be properly collected
 	CreateTimeEvent("taskboard_delay_render", "taskboard_delay_render", 0.05, function ()
 		-- Generate taskboard entries
+
+		-- local filtered_tasks = {}
+
+		-- for task_effect, task_list in pairs(prepared_tasks_data) do
+		-- 	local filtered_tEffects = {} -- New subtable for valid tasks
+		
+		-- 	for _, tData in pairs(task_list) do
+		-- 		if z_taskboard_overrides.tasks_info[tData.task_id] then
+		-- 			table.insert(filtered_tEffects, tData) -- Keep valid tasks
+		-- 			FileLogger.log("FOUND INFO FOR: %s in task_effect: %s", tData.task_id, task_effect)
+		-- 		else
+		-- 			FileLogger.log("Removing task: %s from task_effect: %s", tData.task_id, task_effect)
+		-- 		end
+		-- 	end
+		
+		-- 	if #filtered_tEffects > 0 then -- Only keep non-empty task_effect groups
+		-- 		filtered_tasks[task_effect] = filtered_tEffects
+		-- 	end
+		-- end
+		
+		-- if filtered_tasks then
+		-- 	prepared_tasks_data = filtered_tasks -- Replace with the filtered version
+		-- else
+		-- 	FileLogger.log("NO TASKS FILTERED")
+		-- end
+
 		local i = 1
 		for _, task_effect in ipairs(sorted_keys) do
 			-- Save the order of the rows and currently viewed item from the category to be able to update a single row later
@@ -86,6 +112,7 @@ function reset_taskboard(pda_tab)
 				task_effect = task_effect,
 				current_index = 1
 			}
+
 			update_task_entry(pda_tab, i, prepared_tasks_data[task_effect][1])
 			i = i + 1
 		end
@@ -135,6 +162,7 @@ function accept_task(pda_tab, row_index)
 	local entry_info = current_board_state[row_index]
 	local task_details = prepared_tasks_data[entry_info.task_effect][entry_info.current_index]
 	currently_processed_npc_id = task_details.npc_id
+	FileLogger.log("TASK ACCEPTED: %s", task_details.task_id)
 	task_manager.get_task_manager():give_task(task_details.task_id, task_details.npc_id)
 	currently_processed_npc_id = nil
 	clear_cached_data()
@@ -310,6 +338,9 @@ function update_task_entry(pda_tab, i, task_details)
 	if (not pda_tab.rows[i]) then
 		pda_tab.list:AddWindow(ui_taskboard_row(pda_tab, i))
 	end
+
+	if not task_details then return end
+
 	local row = pda_tab.rows[i]
 
 	row.task_category:SetText(game.translate_string('st_pda_caption_' .. current_board_state[i].task_effect))
@@ -320,14 +351,6 @@ function update_task_entry(pda_tab, i, task_details)
 	local stalker_icon = stalker:character_icon()
 	local stalker_name = stalker:character_name()
 	
-	-- local taskInstance = task_objects.CGeneralTask(task_details.task_id)
-	-- local taskTitle = game.translate_string(taskInstance.current_title)
-	-- local taskDescription = ""
-
-	-- if z_fetch_shows_count and z_fetch_shows_count.TaskDescCache then
-	-- 	taskDescription = z_fetch_shows_count.TaskDescCache[task_details.task_id] or game.translate_string(taskInstance.current_descr) or ""
-	-- end
-
 	stalker_icon = stalker_icon and stalker_icon ~= "" and stalker_icon or "ui\\ui_noise"
 	row.icon_field:InitTexture(stalker_icon)
 	
@@ -338,9 +361,18 @@ function update_task_entry(pda_tab, i, task_details)
 	local more_task_details = get_more_task_details(i, task_details.task_id) or {}
 	row.task_icon_field:InitTexture(more_task_details.task_icon or "ui\\ui_noise")
 
-	local details = (more_task_details.task_title or "") .. 
-	"\\n" .. 
-	(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
+	local details = ""
+	if task_details.task_id then
+		local dBlue = utils_xml.get_color("d_blue")
+		details = (("TASKID - " .. dBlue .. task_details.task_id .. "\\n") .. (more_task_details.task_title or "")) .. 
+		"\\n" .. 
+		(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
+
+	else
+		details = (more_task_details.task_title or "") .. 
+		"\\n" .. 
+		(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
+	end
 	row.task_details_field:SetText(details)
 
 	local full_desc = task_details.task_description or ""
@@ -395,17 +427,17 @@ function get_more_task_details(i, task_id)
 		-- If no new task has been requested for a given category, index of details will be the same as the index of row (or at least I didn't observe any
 		-- deviations from that rule for now)
 		if(task_data.has_details) then
-			return overrides.tasks_info[task_id] or overrides.fallback_tasks_info[taskTitle] or overrides.original_tasks_info[i - get_processed_tasks_with_no_info_count(i)]
+			return overrides.tasks_info[task_id] or overrides.fallback_tasks_info[taskTitle] or overrides.original_tasks_info[i]-- - get_processed_tasks_with_no_info_count(i)]
 		elseif igi_generic_task then
 			return get_igi_task_details(entry_info.current_index)
-		else return end
+		else return false end
 	else
 		-- If new task has been requested, the details will be appended at the end of the array, so we can easily read them
 		if(task_data.has_details) then
 			return overrides.tasks_info[task_id] or overrides.fallback_tasks_info[taskTitle] or overrides.original_tasks_info[#overrides.tasks_info]
 		elseif igi_generic_task then
 			return get_igi_task_details(entry_info.current_index)
-		else return end
+		else return false end
 	end
 end
 
