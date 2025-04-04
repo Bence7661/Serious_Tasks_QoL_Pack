@@ -79,32 +79,6 @@ function reset_taskboard(pda_tab)
 	-- Delay required for task details from actor message to be properly collected
 	CreateTimeEvent("taskboard_delay_render", "taskboard_delay_render", 0.05, function ()
 		-- Generate taskboard entries
-
-		-- local filtered_tasks = {}
-
-		-- for task_effect, task_list in pairs(prepared_tasks_data) do
-		-- 	local filtered_tEffects = {} -- New subtable for valid tasks
-		
-		-- 	for _, tData in pairs(task_list) do
-		-- 		if z_taskboard_overrides.tasks_info[tData.task_id] then
-		-- 			table.insert(filtered_tEffects, tData) -- Keep valid tasks
-		-- 			FileLogger.log("FOUND INFO FOR: %s in task_effect: %s", tData.task_id, task_effect)
-		-- 		else
-		-- 			FileLogger.log("Removing task: %s from task_effect: %s", tData.task_id, task_effect)
-		-- 		end
-		-- 	end
-		
-		-- 	if #filtered_tEffects > 0 then -- Only keep non-empty task_effect groups
-		-- 		filtered_tasks[task_effect] = filtered_tEffects
-		-- 	end
-		-- end
-		
-		-- if filtered_tasks then
-		-- 	prepared_tasks_data = filtered_tasks -- Replace with the filtered version
-		-- else
-		-- 	FileLogger.log("NO TASKS FILTERED")
-		-- end
-
 		local i = 1
 		for _, task_effect in ipairs(sorted_keys) do
 			-- Save the order of the rows and currently viewed item from the category to be able to update a single row later
@@ -162,7 +136,6 @@ function accept_task(pda_tab, row_index)
 	local entry_info = current_board_state[row_index]
 	local task_details = prepared_tasks_data[entry_info.task_effect][entry_info.current_index]
 	currently_processed_npc_id = task_details.npc_id
-	FileLogger.log("TASK ACCEPTED: %s", task_details.task_id)
 	task_manager.get_task_manager():give_task(task_details.task_id, task_details.npc_id)
 	currently_processed_npc_id = nil
 	clear_cached_data()
