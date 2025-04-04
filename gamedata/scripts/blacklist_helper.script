@@ -16,19 +16,6 @@ local northernMaps = {
     ["l12u_sarcofag"] = true,
     ["l12u_control_monolith"] = true,
     ["l13u_warlab"] = true,
-    ["k00_marsh"] = true,
-	["k01_darkscape"] = true,
-	["k02_trucks_cemetery"] = true,
-	["l01_escape"] = true,
-	["l02_garbage"] = true,
-	["l03_agroprom"] = true,
-	["l04_darkvalley"] = true,
-	["l06_rostok"] = true,
-	["l07_military"] = true,
-	["l08_yantar"] = true,
-	["l09_deadcity"] = true,
-    ["y04_pole"] = true,
-    ["l05_bar"] = true,
 }
 
 local southern_maps = {

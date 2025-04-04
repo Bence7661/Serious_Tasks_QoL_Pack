@@ -361,29 +361,60 @@ function update_task_entry(pda_tab, i, task_details)
 	local more_task_details = get_more_task_details(i, task_details.task_id) or {}
 	row.task_icon_field:InitTexture(more_task_details.task_icon or "ui\\ui_noise")
 
-	local details = ""
-	if task_details.task_id then
-		local dBlue = utils_xml.get_color("d_blue")
-		details = (("TASKID - " .. dBlue .. task_details.task_id .. "\\n") .. (more_task_details.task_title or "")) .. 
+	local details = (more_task_details.task_title or "") .. 
 		"\\n" .. 
 		(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
-
-	else
-		details = (more_task_details.task_title or "") .. 
-		"\\n" .. 
-		(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
-	end
 	row.task_details_field:SetText(details)
 
 	local full_desc = task_details.task_description or ""
 	row.task_full_description_field:SetText(full_desc)
+
+	--Flavor stuff for buggy tasks
+	if more_task_details.faulty then
+		local red = utils_xml.get_color("red")
+		local white = utils_xml.get_color("white")
+		local glTxt = "GL finding me: "
+		local easterEggs =
+		{
+			"48 61 63 6B 65 64 20 62 79 20 53 65 72 69 6F 75 73",
+			"68 74 74 70 73 3A 2F 2F 77 77 77 2E 79 6F 75 74 75 62 65 2E 63 6F 6D 2F 77 61 74 63 68 3F 76 3D 78 76 46 5A 6A 6F 35 50 67 47 30"
+		}
+		local rndIndex = math.random(1, 2)
+
+		row.icon_field:InitTexture("ui\\ui_noise")
+		row.stalker_info:SetText(shuffle_string(stalker_info))
+
+		row.task_icon_field:InitTexture("ui\\ui_noise")
+		row.task_details_field:SetText(red .. "ERROR" .. white)
+		row.task_full_description_field:SetText(red .. "[PDAOpSys] - Critical Error\\n\\n" .. white .. glTxt .. easterEggs[rndIndex])
+	end
+	
 	row.task_next_btn:Show(has_more_task_in_category(i))
-	manage_accept_button(stalker, row)
+	manage_accept_button(stalker, row, more_task_details.faulty)
 end
 
-function manage_accept_button(stalker, row)
+--Flavor stuff for buggy tasks
+function shuffle_string(str)
+    local chars = {}
+    for i = 1, #str do
+        chars[i] = str:sub(i, i)
+    end
+
+    -- Fisher-Yates shuffle
+    for i = #chars, 2, -1 do
+        local j = math.random(1, i)
+        chars[i], chars[j] = chars[j], chars[i]
+    end
+
+    return table.concat(chars)
+end
+
+function manage_accept_button(stalker, row, faulty)
 	local reached_limit = dialogs.has_tasks_by_npc(stalker)
-	if reached_limit then
+
+	if faulty then
+		row.task_accept_btn:Show(false)
+	elseif reached_limit then
 		row.task_limit_reached_btn:Show(true)
 		row.task_accept_btn:Show(false)
 	else

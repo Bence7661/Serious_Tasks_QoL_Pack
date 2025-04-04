@@ -9,37 +9,25 @@ function create_overrides()
             local _, task_title, task_details, task_icon = ...
 
             local task_id = select(-1, ...) -- Last parameter
-            
-            -- if string.find(task_id, "task") == nil then
-            --     FileLogger.log("NO ID")
-            --     callstack()
-            -- end
-            
-            FileLogger.log("CALLSTACK")
-            callstack()
-
-            local white = utils_xml.get_color("white")
-            local green = utils_xml.get_color("green")
-            local yellow = utils_xml.get_color("yellow")
-            local red = utils_xml.get_color("red")
 
             tasks_info[task_id] =
             {
-                task_title = green .. "BEST CASE\\n" .. white .. task_title,
+                task_title = task_title,
                 task_details = task_details,
                 task_icon = task_icon
             }
 
             fallback_tasks_info[task_title] = {
-                task_title = yellow .. "FALLBACK\\n" .. white .. task_title,
+                task_title = task_title,
                 task_details = task_details,
                 task_icon = task_icon
             }
     
             table.insert(original_tasks_info, {
-                task_title = red .. "WORST CASE\\n" .. white .. task_title,
+                task_title = task_title,
                 task_details = task_details,
-                task_icon = task_icon
+                task_icon = task_icon,
+                faulty = true
             })
         else
             original_give_talk_message2(...)
