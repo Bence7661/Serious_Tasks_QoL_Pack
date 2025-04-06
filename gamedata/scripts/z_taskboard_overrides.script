@@ -10,18 +10,14 @@ function create_overrides()
 
             local task_id = select(-1, ...) -- Last parameter
 
-            tasks_info[task_id] =
-            {
-                task_title = task_title,
-                task_details = task_details,
-                task_icon = task_icon
-            }
-
-            fallback_tasks_info[task_title] = {
-                task_title = task_title,
-                task_details = task_details,
-                task_icon = task_icon
-            }
+            if task_id then
+                tasks_info[task_id] =
+                {
+                    task_title = task_title,
+                    task_details = task_details,
+                    task_icon = task_icon
+                }
+            end
     
             table.insert(original_tasks_info, {
                 task_title = task_title,

@@ -311,36 +311,27 @@ function update_task_entry(pda_tab, i, task_details)
 	if (not pda_tab.rows[i]) then
 		pda_tab.list:AddWindow(ui_taskboard_row(pda_tab, i))
 	end
-
 	if not task_details then return end
 
 	local row = pda_tab.rows[i]
+	local effect = current_board_state[i].task_effect
 
-	row.task_category:SetText(game.translate_string('st_pda_caption_' .. current_board_state[i].task_effect))
-	
 	local stalker = level.object_by_id(task_details.npc_id)
-
 	local stalker_comm = stalker:character_community()
 	local stalker_icon = stalker:character_icon()
 	local stalker_name = stalker:character_name()
-	
 	stalker_icon = stalker_icon and stalker_icon ~= "" and stalker_icon or "ui\\ui_noise"
-	row.icon_field:InitTexture(stalker_icon)
-	
 	local stalker_info = stalker_name .. "\\n" ..
 	game.translate_string("ui_st_community") .. ": " .. game.translate_string(stalker_comm)
-	row.stalker_info:SetText(stalker_info)
 
 	local more_task_details = get_more_task_details(i, task_details.task_id) or {}
-	row.task_icon_field:InitTexture(more_task_details.task_icon or "ui\\ui_noise")
 
-	local details = (more_task_details.task_title or "") .. 
-		"\\n" .. 
-		(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
-	row.task_details_field:SetText(details)
+	local details =
+	(more_task_details.task_title or "") ..
+	"\\n" ..
+	(string.gsub(more_task_details.task_details or "", "\\n ", "\\n"))
 
 	local full_desc = task_details.task_description or ""
-	row.task_full_description_field:SetText(full_desc)
 
 	--Flavor stuff for buggy tasks
 	if more_task_details.faulty then
@@ -356,10 +347,16 @@ function update_task_entry(pda_tab, i, task_details)
 
 		row.icon_field:InitTexture("ui\\ui_noise")
 		row.stalker_info:SetText(shuffle_string(stalker_info))
-
 		row.task_icon_field:InitTexture("ui\\ui_noise")
 		row.task_details_field:SetText(red .. "ERROR" .. white)
 		row.task_full_description_field:SetText(red .. "[PDAOpSys] - Critical Error\\n\\n" .. white .. glTxt .. easterEggs[rndIndex])
+	else
+		row.task_category:SetText(game.translate_string('st_pda_caption_' .. effect))
+		row.icon_field:InitTexture(stalker_icon)
+		row.stalker_info:SetText(stalker_info)
+		row.task_icon_field:InitTexture(more_task_details.task_icon or "ui\\ui_noise")
+		row.task_details_field:SetText(details)
+		row.task_full_description_field:SetText(full_desc)
 	end
 	
 	row.task_next_btn:Show(has_more_task_in_category(i))
@@ -421,8 +418,6 @@ end
 -- This function is a pure fuckery and crime against the code, but there's literally no other way to couple the
 -- task data with the details received through overridden actor method.
 function get_more_task_details(i, task_id)
-	local taskInstance = task_objects.CGeneralTask(task_id)
-	local taskTitle = game.translate_string(taskInstance.current_title)
 	local overrides = z_taskboard_overrides
 
 	local entry_info = current_board_state[i]
@@ -431,14 +426,14 @@ function get_more_task_details(i, task_id)
 		-- If no new task has been requested for a given category, index of details will be the same as the index of row (or at least I didn't observe any
 		-- deviations from that rule for now)
 		if(task_data.has_details) then
-			return overrides.tasks_info[task_id] or overrides.fallback_tasks_info[taskTitle] or overrides.original_tasks_info[i]-- - get_processed_tasks_with_no_info_count(i)]
+			return overrides.tasks_info[task_id] or overrides.original_tasks_info[i]-- - get_processed_tasks_with_no_info_count(i)]
 		elseif igi_generic_task then
 			return get_igi_task_details(entry_info.current_index)
 		else return false end
 	else
 		-- If new task has been requested, the details will be appended at the end of the array, so we can easily read them
 		if(task_data.has_details) then
-			return overrides.tasks_info[task_id] or overrides.fallback_tasks_info[taskTitle] or overrides.original_tasks_info[#overrides.tasks_info]
+			return overrides.tasks_info[task_id] or overrides.original_tasks_info[#overrides.tasks_info]
 		elseif igi_generic_task then
 			return get_igi_task_details(entry_info.current_index)
 		else return false end
