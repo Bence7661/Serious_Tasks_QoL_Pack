@@ -21,11 +21,6 @@ function news_manager.send_task(actor, type, tsk)
 		icon = "ui_iconsTotal_storyline"
 	end
 
-	if not tsk then
-		FileLogger.log("[news_manager.send_task] Task: nil")
-	end
-	FileLogger.log("[news_manager.send_task] TaskId: %s", tsk.id)
-
 	if db.actor:is_talking() then
 		db.actor:give_talk_message2(news_caption, news_text..".", icon, "iconed_answer_item", tsk.id)
 	else
