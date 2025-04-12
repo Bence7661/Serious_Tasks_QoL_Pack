@@ -123,12 +123,13 @@ xr_effects.on_init_delivery_task = function(actor,npc,p)
 				end
 			end
 		end
-		
 		if (#targets == 0) then
 			printf("! %s TASK ERROR: xr_effects.create_delivery_quest - no target found!", var)
+			blacklist_helper.TaskBlacklist[p[1]] = true
 			return
 		end
-		
+
+		blacklist_helper.TaskBlacklist[p[1]] = false
 		target_id = targets[math.random(#targets)]
 		
 		if (not delivery_cache[var]) then

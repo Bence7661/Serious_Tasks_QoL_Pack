@@ -86,9 +86,31 @@ function reset_taskboard(pda_tab)
 				task_effect = task_effect,
 				current_index = 1
 			}
+			local columnIndex = 1
+			local stopColumnIteration = false
+			local deleteRow = true
 
-			update_task_entry(pda_tab, i, prepared_tasks_data[task_effect][1])
-			i = i + 1
+			while not stopColumnIteration do
+				local columnData = prepared_tasks_data[task_effect][columnIndex]
+				if columnData then
+	
+					if not blacklist_helper.TaskBlacklist[columnData.task_id] then
+						update_task_entry(pda_tab, i, columnData)
+						stopColumnIteration = true
+						deleteRow = false
+					else
+						columnIndex = columnIndex + 1
+					end
+				else
+					stopColumnIteration = true
+				end
+			end
+
+			if deleteRow then
+				current_board_state[i] = nil
+			else
+				i = i + 1
+			end
 		end
 		a_taskboard_utils.adjust_rows(pda_tab)
 		return true
@@ -276,11 +298,14 @@ function get_prepared_task_data(npc_list)
 				if not result[task_effect] then
 					result[task_effect] = {}
 				end
-				table.insert(result[task_effect], {
-					npc_id = stalker:id(),
-					task_id = task_id,
-					has_details = has_details
-				})
+
+				if not blacklist_helper.TaskBlacklist[task_id] then
+					table.insert(result[task_effect], {
+						npc_id = stalker:id(),
+						task_id = task_id,
+						has_details = has_details
+					})
+				end
 			end
 		end
 	end

@@ -50,7 +50,7 @@ local function is_smart_valid(squad_id)
 	end
 	return true
 end
-	
+
 ---------------------------< Effects >---------------------------
 xr_effects.setup_bounty_task = function(actor,npc,p)
 -- p[1]: task_id
@@ -180,12 +180,13 @@ xr_effects.setup_bounty_task = function(actor,npc,p)
 	else
 		target_id = bounty_cache[p[1]][math.random(#bounty_cache[p[1]])]
 	end
-	
 	if (target_id == nil or target_id == AC_ID) then
 		printf("! %s - no target found for task",p[1])
+		blacklist_helper.TaskBlacklist[p[1]] = true
 		return
 	end
-		
+
+	blacklist_helper.TaskBlacklist[p[1]] = nil
 	axr_task_manager.bounties_by_id[p[1]] = target_id
 	
 	local se_target = alife_object(target_id)

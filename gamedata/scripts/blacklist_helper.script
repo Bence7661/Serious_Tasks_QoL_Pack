@@ -1,4 +1,5 @@
 local thejobcanwait_mcm_conf = serious_the_job_can_wait_mcm.get_config
+TaskBlacklist = {} --If a task failed to find a target I'll put it's Id here so I can later prevent the task from entering the task pool.
 
 local northernMaps = {
 	["l10_limansk"] = true,
