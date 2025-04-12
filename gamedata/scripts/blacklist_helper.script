@@ -122,7 +122,8 @@ xr_conditions.serious_no_step_back_precond = function(actor, npc, p)
 end
 
 function GetMcmDropdownValue()
-    return tonumber(thejobcanwait_mcm_conf("scan_mode_override"))
+    local dropdownValue = tonumber(thejobcanwait_mcm_conf("scan_mode_override")) or 0
+    return dropdownValue
 end
 
 --Compatibility helpers

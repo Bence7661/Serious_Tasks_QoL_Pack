@@ -429,8 +429,8 @@ xr_conditions.validate_assault_task = function(actor, npc, p)
 	local mcm_scanMode = blacklist_helper.GetMcmDropdownValue()
 	local northernMaps = blacklist_helper.GetNorthernMaps()
 
-	if mcm_scanMode > 0  then
-		scan_mode = mcm_scanMode
+	if mcm_scanMode and mcm_scanMode > 0  then
+		def.scan = mcm_scanMode
 	end
 
 	if blacklist_helper.ShouldBlacklistNorth() then
