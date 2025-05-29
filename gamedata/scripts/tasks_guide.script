@@ -11,7 +11,7 @@ local ignore_tbl	= {}
 local point_tbl		= {}
 local ret_way		= {}
 local cycle_id		= 0
-local tbl_way = { 
+tbl_way = { 
 	l01_escape			= {"k00_marsh",		"k01_darkscape",	"l02_garbage"},
 	k00_marsh			= {"l01_escape",	'l03_agroprom'},
 	k01_darkscape		= {"l01_escape",	"l04_darkvalley"},
@@ -70,7 +70,7 @@ local tbl_way = {
 	--y04_pole			    = {"l01_escape",	'l04_darkvalley'}
 ]]
 
-local tbl_ignore_Locations = {
+tbl_ignore_Locations = {
     --y04_pole				= true,
 	l03u_agr_underground	= true,
 	jupiter_underground		= true,
