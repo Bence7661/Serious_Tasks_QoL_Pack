@@ -59,22 +59,22 @@ xr_effects.drx_sl_create_quest_stash = function( actor, npc, p )
 			if ( not stash_id ) then
 				printf( "! %s - Unable to get quest stash %s id !!", p[1], typ )
 			end
-			
+
 			cache_stash[p[1]] = stash_id
 		end
-		
+
 		target_id = cache_stash[p[1]]
 		se_target = target_id and alife_object(target_id)
 		if not (se_target) then
 			printf( "! %s - Unable to get quest stash %s object !!", p[1], typ )
 			return
 		end
-		
+
 		level_target = alife():level_name(game_graph():vertex(se_target.m_game_vertex_id):level_id())
 		level_task = level.name()
-		
+
 		local rerollStash = false
-		
+
 		if blacklistNorth then
 			blacklistedMaps = northernMaps
 		elseif northernMaps[level_task] then -- Player is in the Northern region and rightfully so
@@ -84,7 +84,20 @@ xr_effects.drx_sl_create_quest_stash = function( actor, npc, p )
 		if blacklistedMaps[level_target] then
 			rerollStash = true
 		end
-		
+
+		if not rerollStash then
+			local targetCache = load_var(db.actor, tostring(target_id))
+
+			if targetCache then
+				local taskWithSameTarget = load_var(db.actor, tostring(targetCache))
+				if taskWithSameTarget then
+					rerollStash = true
+				else
+					save_var( db.actor, target_id, nil ) -- If there's no task targeting that stash then we clear cache.
+				end
+			end
+		end
+
 		if rerollStash and stashRerollCount < 500 then -- We should get a suitable stash that isn't blacklisted from 500 rolls, right? It's fine if not then we will just use the one we got. Tough luck
 			cache_stash[p[1]] = nil
 			stashRerollCount = stashRerollCount + 1
@@ -103,6 +116,8 @@ xr_effects.drx_sl_create_quest_stash = function( actor, npc, p )
 
 	-- Save the stash id:
 	save_var( db.actor, p[1], tbl )
+	save_var( db.actor, tostring(target_id), p[1] ) -- Save stash id so it's not rolled if it's target of another stash task.
+
 	printdbg("- %s | drx_sl_create_quest_stash | target_id: %s - lvl_target: %s - type: %s", p[1], target_id, level_target, typ)
 	
 	local function postpone_for_next_frame()
@@ -123,7 +138,7 @@ task_functor.drx_sl_quest_item_task_target = function( task_id, field, p, tsk )
 --	Return value (type: ): ID of the current task target
 	
 	if (not db.actor) then
-		return bil
+		return nil
 	end
 	
 	if (field == "target") then
