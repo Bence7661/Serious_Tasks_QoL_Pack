@@ -66,10 +66,10 @@ local fate_map_blacklist = {
 
 function ShouldBlacklistNorth()
 	local playerFaction = get_actor_true_community()
-    local mmAndbsDisabled = IsMmAndBsDisabled()
+    local mmAndBsDisabled = IsMmAndBsDisabled()
 
 	if
-		(mmAndbsDisabled)
+		(mmAndBsDisabled)
 		or
 		(psy_immune_factions[playerFaction] or has_alife_info("story_mode_disabled"))
 	then
