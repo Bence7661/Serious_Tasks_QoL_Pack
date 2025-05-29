@@ -81,7 +81,7 @@ local faction_lookup = { -- List of factions used in patch tasks
 	"monolith"
 }
 
-if smr_amain_mcm.get_config("smr_enabled") then
+if smr_amain_mcm and smr_amain_mcm.get_config("smr_enabled") then
 	faction_lookup = smr_pop.get_faction_spawn_table()
 end
 
@@ -379,7 +379,7 @@ xr_effects.setup_fetch_task = function(actor,npc,p) -- setup_supplies_fetch_task
 				end
 			end
 			
-			if is_empty(patches) then
+			if smr_amain_mcm and is_empty(patches) then
                 if smr_amain_mcm.get_config("smr_enabled") then
                     local t = smr_pop.get_faction_spawn_table()
                     local patch = t[math.random(#t)] .. "_patch"
@@ -498,7 +498,7 @@ xr_effects.setup_supplies_fetch_task_lostzone_patch = function(actor,npc,p)
 		local comm = npc and character_community(npc) or "stalker"
 		local itms = patch_general[comm] or patch_general["stalker"]
 		-- SMR
-        if smr_amain_mcm.get_config("smr_enabled") then
+        if smr_amain_mcm and smr_amain_mcm.get_config("smr_enabled") then
 			local itms = {}
 			for i=1,#faction_lookup do
 				if game_relations.is_factions_enemies(faction_lookup[i], comm) then
