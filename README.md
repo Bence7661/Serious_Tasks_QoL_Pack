@@ -1,7 +1,5 @@
 # Tasks QoL Pack
-v1.0.0
-
-# INCOMPATIBLE WITH REDONE
+v2.0.0
 
 A modpack consisting of my task related QoL mods.  
 I decided to bundle together 3 of my mods because all depend on each other. If need be I can eliminate the dependency, but for now I just release it as a pack instead.
@@ -27,9 +25,9 @@ If you have any of these enabled: **The Job Can Wait**, **The Northern Job** dis
 Drop this mod at highest priority as it overwrites a lot of files.
 
 # Compatibility
-Manual patching needed
-- New levels 0.53 (2023.07.25): Patch can be found in `gamedata\compatibility_patches\New_Levels_0.53`. There is a `README.txt` with instructions on how to apply (You just need to drag and drop 1 file no biggie).
-- If you've disabled `G.A.M.M.A. Psy Fields in the North`. There is a folder in `gamedata\compatibility_patches` called `You disabled - G.A.M.M.A. Psy Fields in the North`. Check readme and install.
+No manual patching needed. Scripts will check if you have any of the below mods installed and will auto patch if the mod.
+- New levels 0.53 (2023.07.25)
+- Disabled `G.A.M.M.A. Psy Fields in the North`.
 
 # MCM Options
 - Standalone **The Job Can Wait** had MCM options. These can still be found under MCM -> **The Job Can Wait**.
