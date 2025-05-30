@@ -47,6 +47,7 @@ function ui_taskboard_row:__init(parent, row) super(parent, row)
 	self.task_full_description_field = xml:InitTextWnd("task_full_description_field", self)
 	self.task_accept_btn = xml:Init3tButton("btn_accept_task", self)
 	self.task_next_btn = xml:Init3tButton("btn_next_task", self)
+	self.task_previous_btn = xml:Init3tButton("btn_previous_task", self)
 
 	self.task_limit_reached_btn = xml:Init3tButton("btn_task_limit_reached", self)
 	self.task_limit_reached_btn:Show(false);
@@ -59,6 +60,9 @@ function ui_taskboard_row:__init(parent, row) super(parent, row)
 
 	parent:Register(self.task_next_btn, "task_next_btn_" .. row)
 	parent:AddCallback("task_next_btn_" .. row, ui_events.BUTTON_CLICKED, next_task_in_category_callback_factory(parent, row), self)
+	
+	parent:Register(self.task_previous_btn, "task_previous_btn_" .. row)
+    parent:AddCallback("task_previous_btn_" .. row, ui_events.BUTTON_CLICKED, previous_task_in_category_callback_factory(parent, row), self)
 end
 
 local prepared_tasks_data = {}
@@ -191,6 +195,41 @@ function next_task_in_category(pda_tab, row_index)
 			reset_taskboard(pda_tab)
 		end
 	end
+end
+
+function previous_task_in_category_callback_factory(pda_tab, row_index)
+    return function() 
+        previous_task_in_category(pda_tab, row_index)
+    end
+end
+
+function previous_task_in_category(pda_tab, row_index)
+    local entry_info = current_board_state[row_index]
+	if not entry_info then
+        print("Warning: entry_info is nil for row_index:", row_index)
+        return
+    end
+    local prev_task = prepared_tasks_data[entry_info.task_effect][entry_info.current_index - 1]
+	if not prev_task then
+        print("Warning: prev_task is nil for row_index:", row_index)
+        return
+    end
+
+    if prev_task then
+		local stalker = level.object_by_id(prev_task.npc_id)
+        if stalker then
+            prepare_task(prev_task)
+
+            CreateTimeEvent("previous_task_delay", "previous_task_delay", 0.05, function()
+                entry_info.current_index = entry_info.current_index - 1
+                update_task_entry(pda_tab, row_index, prev_task)
+                a_taskboard_utils.adjust_rows(pda_tab)
+                return true
+			end)
+        else
+            reset_taskboard(pda_tab)
+        end
+    end
 end
 
 function refresh_tasks_factory(pda_tab) 
@@ -386,6 +425,8 @@ function update_task_entry(pda_tab, i, task_details)
 	
 	row.task_next_btn:Show(has_more_task_in_category(i))
 	manage_accept_button(stalker, row, more_task_details.faulty)
+	pda_tab.rows[i].task_previous_btn:Show(has_previous_task_in_category(i))
+	manage_accept_button(stalker, row)
 end
 
 --Flavor stuff for buggy tasks
@@ -422,6 +463,12 @@ function has_more_task_in_category(i)
 	local entry_info = current_board_state[i]
 	local next_task = prepared_tasks_data[entry_info.task_effect][entry_info.current_index + 1]
 	return not not next_task
+end
+
+function has_previous_task_in_category(i)
+	local entry_info = current_board_state[i]
+    local prev_task = prepared_tasks_data[entry_info.task_effect][entry_info.current_index - 1]
+    return not not prev_task
 end
 
 function get_igi_task_details(i)
