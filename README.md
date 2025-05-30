@@ -27,6 +27,7 @@ Drop this mod at highest priority as it overwrites a lot of files.
 No manual patching needed. Scripts will check if you have any of the below mods installed and will auto patch if the mod.
 - New levels 0.53 (2023.07.25)
 - Disabled `G.A.M.M.A. Psy Fields in the North`.
+- PDA Back button integrated thanks to @monstercatty a.k.a. cXy
 
 # MCM Options
 - Standalone **The Job Can Wait** had MCM options. These can still be found under MCM -> **The Job Can Wait**.
