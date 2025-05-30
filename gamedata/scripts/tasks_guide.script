@@ -70,7 +70,7 @@ tbl_way = {
 	--y04_pole			    = {"l01_escape",	'l04_darkvalley'}
 ]]
 
-tbl_ignore_Locations = {
+local tbl_ignore_Locations = {
     --y04_pole				= true,
 	l03u_agr_underground	= true,
 	jupiter_underground		= true,
@@ -90,6 +90,7 @@ tbl_ignore_Locations = {
 	l12u_sarcofag			= true,
 	l13_generators			= true
 }
+
 local ignore_factions = {
 	["zombied"] = true,
 }
