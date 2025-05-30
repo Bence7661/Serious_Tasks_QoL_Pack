@@ -123,6 +123,12 @@ xr_conditions.serious_no_step_back_precond = function(actor, npc, p)
     end
 end
 
+xr_conditions.serious_monolith_convert_precond = function()
+    FileLogger.log("Precond called")
+
+    return IsMmAndBsDisabled()
+end
+
 function GetMcmDropdownValue()
     local dropdownValue = tonumber(thejobcanwait_mcm_conf("scan_mode_override")) or 0
     return dropdownValue
