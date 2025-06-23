@@ -191,7 +191,7 @@ end
 
 function go_poisk()
 	local start_point = level.name()
-	if tbl_ignore_Locations[start_point] or not level_weathers.valid_levels[start_point] then
+	if tbl_ignore_Locations[start_point] or not level_weathers.valid_levels[start_point] or not tbl_way[start_point] then
 		return
 	end
 	
