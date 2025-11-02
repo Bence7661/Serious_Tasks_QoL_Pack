@@ -445,9 +445,12 @@ function fail()
 end
 
 function get_comm_id(squad_id)
-	if squad_id == nil then return end
+	if not squad_id then return end
+
 	local squad = alife_object(squad_id)
-	return squad and squad:commander_id()
+	return squad
+	  and squad.commander_id 
+	  and squad:commander_id()
 end
 
 -- Dialog Functions
